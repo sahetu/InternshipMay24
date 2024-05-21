@@ -3,7 +3,51 @@
     <style name="Base.Theme.InternshipMay24" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="fontFamily">@font/doppio_one</item>
     </style>
 
     <style name="Theme.InternshipMay24" parent="Base.Theme.InternshipMay24" />
+
+    <style name="edit_18" parent="Widget.AppCompat.EditText">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginHorizontal">@dimen/_20sdp</item>
+        <item name="android:drawablePadding">@dimen/_5sdp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textColorHint">@color/white_transparent</item>
+        <item name="android:textSize">@dimen/_18sdp</item>
+    </style>
+
+    <style name="text_bold_20" parent="Widget.AppCompat.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/_20sdp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="text_20" parent="Widget.AppCompat.TextView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/white_transparent</item>
+        <item name="android:textSize">@dimen/_20sdp</item>
+    </style>
+
+    <style name="text_16" parent="Widget.AppCompat.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/_16sdp</item>
+    </style>
+
+    <style name="button_20" parent="Widget.AppCompat.Button">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/custom_button</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/_20sdp</item>
+        <item name="backgroundTint">@null</item>
+    </style>
+
 </resources>
