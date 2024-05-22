@@ -1,11 +1,14 @@
 package internship.may24;
 
+import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     EditText username,password;
     Button login;
     TextView signup,forgotPassword;
+    ImageView passwordHide,passwordShow;
 
     String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
 
@@ -38,6 +42,27 @@ public class MainActivity extends AppCompatActivity {
         forgotPassword = findViewById(R.id.main_forgot);
 
         forgotPassword.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG);
+
+        passwordHide = findViewById(R.id.main_password_hidden);
+        passwordShow = findViewById(R.id.main_password_show);
+
+        passwordShow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                passwordShow.setVisibility(View.GONE);
+                passwordHide.setVisibility(View.VISIBLE);
+                password.setTransformationMethod(null);
+            }
+        });
+
+        passwordHide.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                passwordShow.setVisibility(View.VISIBLE);
+                passwordHide.setVisibility(View.GONE);
+                password.setTransformationMethod(new PasswordTransformationMethod());
+            }
+        });
 
         //TextView
         //ImageView
@@ -65,9 +90,33 @@ public class MainActivity extends AppCompatActivity {
                 else{
                     System.out.println("Login Successfully");
                     Log.d("RESPONSE","Login Successfully");
-                    Toast.makeText(MainActivity.this, "Login Successfully", Toast.LENGTH_SHORT).show();
-                    Snackbar.make(view,"Login Successfully",Snackbar.LENGTH_LONG).show();
+                    //Toast.makeText(MainActivity.this, "Login Successfully", Toast.LENGTH_SHORT).show();
+                    new CommonMethod(MainActivity.this, "Login Successfully");
+                    //Snackbar.make(view,"Login Successfully",Snackbar.LENGTH_LONG).show();
+                    new CommonMethod(view,"Login Successfully");
+
+                    /*Intent intent = new Intent(MainActivity.this,DashboardActivity.class);
+                    startActivity(intent);*/
+                    new CommonMethod(MainActivity.this,DashboardActivity.class);
                 }
+            }
+        });
+
+        signup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                /*Intent intent = new Intent(MainActivity.this,SignupActivity.class);
+                startActivity(intent);*/
+                new CommonMethod(MainActivity.this,SignupActivity.class);
+            }
+        });
+
+        forgotPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                /*Intent intent = new Intent(MainActivity.this, ForgotPasswordActivity.class);
+                startActivity(intent);*/
+                new CommonMethod(MainActivity.this, ForgotPasswordActivity.class);
             }
         });
 
