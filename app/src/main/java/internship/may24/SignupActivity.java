@@ -3,9 +3,15 @@ package internship.may24;
 import android.os.Bundle;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.Spinner;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +26,14 @@ public class SignupActivity extends AppCompatActivity {
     Button signup;
 
     String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
+
+    //RadioButton male,female;
+    RadioGroup gender;
+    Spinner city;
+    String[] cityArray = {"Select City","Ahmedabad","Vadodara","Surat","Rajkot","Gandhinagar"};
+
+    CheckBox terms;
+    String sCity = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +52,56 @@ public class SignupActivity extends AppCompatActivity {
 
         confirmPasswordShow = findViewById(R.id.signup_confirm_password_show);
         confirmPasswordHide = findViewById(R.id.signup_confirm_password_hidden);
+
+        /*male = findViewById(R.id.signup_male);
+        female = findViewById(R.id.signup_female);
+
+        male.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new CommonMethod(SignupActivity.this,"Male");
+            }
+        });
+
+        female.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new CommonMethod(SignupActivity.this,"Female");
+            }
+        });*/
+
+        gender = findViewById(R.id.signup_gender);
+        gender.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                RadioButton radioButton = findViewById(i);
+                new CommonMethod(SignupActivity.this,radioButton.getText().toString());
+            }
+        });
+
+        city = findViewById(R.id.signup_city);
+        ArrayAdapter adapter = new ArrayAdapter(SignupActivity.this, android.R.layout.simple_list_item_checked,cityArray);
+        city.setAdapter(adapter);
+
+        city.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if(i==0){
+                    sCity = "";
+                }
+                else {
+                    sCity = cityArray[i];
+                    new CommonMethod(SignupActivity.this, cityArray[i]);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        terms = findViewById(R.id.signup_terms);
 
         signup = findViewById(R.id.signup_button);
 
@@ -109,6 +173,15 @@ public class SignupActivity extends AppCompatActivity {
                 }
                 else if(!password.getText().toString().trim().matches(confirmPassword.getText().toString().trim())){
                     confirmPassword.setError("Password Does Not Match");
+                }
+                else if(gender.getCheckedRadioButtonId()== -1){
+                    new CommonMethod(SignupActivity.this,"Please Select Gender");
+                }
+                else if(sCity.equals("")){
+                    new CommonMethod(SignupActivity.this,"Please Select City");
+                }
+                else if(!terms.isChecked()){
+                    new CommonMethod(SignupActivity.this,"Please Accept Terms & Conditions");
                 }
                 else{
                     new CommonMethod(SignupActivity.this,"Signup Successfully");
