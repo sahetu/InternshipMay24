@@ -16,9 +16,15 @@
         android:layout_marginTop="@dimen/_20sdp" />
 
     <Button
-        android:id="@+id/dashboard_profile"
+        android:id="@+id/dashboard_category"
         style="@style/button_20"
         android:layout_marginTop="@dimen/_20sdp"
+        android:text="Category" />
+
+    <Button
+        android:id="@+id/dashboard_profile"
+        style="@style/button_20"
+        android:layout_marginTop="@dimen/_10sdp"
         android:text="Profile" />
 
     <Button
