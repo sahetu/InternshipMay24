@@ -2,6 +2,7 @@ package internship.may24;
 
 public class ConstantSp {
 
+    public static final String PRICE_SYMBOL = "₹";
     public static final String PREF = "pref";
 
     public static final String USERID = "userid";
@@ -15,5 +16,10 @@ public class ConstantSp {
 
     public static final String CATEGORY_ID = "category_id";
     public static final String CATEGORY_NAME = "category_name";
+
+    public static final String SUB_CATEGORY_ID = "sub_category_id";
+    public static final String SUB_CATEGORY_NAME = "sub_category_name";
+
+    public static final String PRODUCT_ID = "product_id";
 
 }

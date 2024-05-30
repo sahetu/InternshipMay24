@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/_10sdp"
+    app:cardCornerRadius="@dimen/_5sdp"
+    app:cardElevation="@dimen/_3sdp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/_10sdp">
+
+        <ImageView
+            android:id="@+id/product_detail_image"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_200sdp" />
+
+        <TextView
+            android:id="@+id/product_detail_name"
+            style="@style/text_16"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/product_detail_price"
+            style="@style/text_16"
+            android:layout_marginTop="@dimen/_3sdp"
+            android:textColor="@color/black"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/product_detail_description"
+            style="@style/text_13"
+            android:layout_marginTop="@dimen/_3sdp"
+            android:textColor="@color/black"/>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

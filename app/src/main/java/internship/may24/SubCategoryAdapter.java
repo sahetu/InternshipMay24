@@ -57,14 +57,14 @@ public class SubCategoryAdapter extends RecyclerView.Adapter<SubCategoryAdapter.
         holder.imageView.setImageResource(Integer.parseInt(arrayList.get(position).getImage()));
         holder.name.setText(arrayList.get(position).getName());
 
-        /*holder.itemView.setOnClickListener(new View.OnClickListener() {
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sp.edit().putString(ConstantSp.CATEGORY_ID,arrayList.get(position).getCategoryId()).commit();
-                sp.edit().putString(ConstantSp.CATEGORY_NAME,arrayList.get(position).getName()).commit();
-                new CommonMethod(context, SubCategoryActivity.class);
+                sp.edit().putString(ConstantSp.SUB_CATEGORY_ID,arrayList.get(position).getId()).commit();
+                sp.edit().putString(ConstantSp.SUB_CATEGORY_NAME,arrayList.get(position).getName()).commit();
+                new CommonMethod(context, ProductActivity.class);
             }
-        });*/
+        });
 
     }
 
