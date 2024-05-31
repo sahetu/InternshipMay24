@@ -19,7 +19,7 @@ public class DashboardActivity extends AppCompatActivity {
     TextView name;
     SharedPreferences sp;
 
-    Button profile,logout,category;
+    Button profile,logout,category,wishlist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +72,14 @@ public class DashboardActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 new CommonMethod(DashboardActivity.this, CategoryActivity.class);
+            }
+        });
+
+        wishlist = findViewById(R.id.dashboard_wishlist);
+        wishlist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new CommonMethod(DashboardActivity.this, WishlistActivity.class);
             }
         });
 

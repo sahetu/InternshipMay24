@@ -37,6 +37,29 @@
             android:layout_marginTop="@dimen/_3sdp"
             android:textColor="@color/black"/>
 
+        <LinearLayout
+            android:layout_marginTop="@dimen/_20sdp"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/product_detail_wishlist"
+                android:padding="@dimen/_2sdp"
+                android:src="@drawable/wishlist_empty"
+                android:layout_width="@dimen/_35sdp"
+                android:layout_height="@dimen/_35sdp"/>
+
+            <ImageView
+                android:layout_marginLeft="@dimen/_10sdp"
+                android:id="@+id/product_detail_cart"
+                android:padding="@dimen/_2sdp"
+                android:src="@drawable/add_cart"
+                android:layout_width="@dimen/_35sdp"
+                android:layout_height="@dimen/_35sdp"/>
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>
