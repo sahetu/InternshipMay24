@@ -2,7 +2,16 @@ package internship.may24;
 
 public class ProductList {
 
-String id,categoryId,subCategoryId,name,image,description,price;
+String id,categoryId,subCategoryId,name,image,description,price,brand;
+boolean isWishlist = false;
+
+    public boolean isWishlist() {
+        return isWishlist;
+    }
+
+    public void setWishlist(boolean wishlist) {
+        isWishlist = wishlist;
+    }
 
     public String getId() {
         return id;
@@ -58,5 +67,12 @@ String id,categoryId,subCategoryId,name,image,description,price;
 
     public void setPrice(String price) {
         this.price = price;
+    }
+    public String getBrand() {
+        return brand;
+    }
+
+    public void setBrand(String brand) {
+        this.brand = brand;
     }
 }

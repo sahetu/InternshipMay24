@@ -21,17 +21,19 @@ public class ProductActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
 
-    String[] categoryIdArray  ={"1","1","2"};
-    String[] subCategoryIdArray  ={"1","1","7"};
-    String[] namerArray = {"Men Solid Casual White Shirt","Black Checked Regular Fit Casual Shirt","Men Cotton Plain Polo Neck Grey T Shirts"};
-    int[] imageArray = {R.drawable.us_polo_shirt,R.drawable.uspolo_regular_fit,R.drawable.allen_tshirt};
+    String[] categoryIdArray  ={"1","1","2","5","5","5","5","5","5"};
+    String[] subCategoryIdArray  ={"1","1","7","10","10","10","10","10","10"};
+    String[] namerArray = {"Men Solid Casual White Shirt","Black Checked Regular Fit Casual Shirt","Men Cotton Plain Polo Neck Grey T Shirts","Men Revolution 6 Running Shoes","Men Surface Grip Walking Shoes","Men Quest Road Running Shoes","Men Wisefoma Running Shoes","Men Scorch Runner V2","Unisex Badminton Indoor Shoes"};
+    int[] imageArray = {R.drawable.us_polo_shirt,R.drawable.uspolo_regular_fit,R.drawable.allen_tshirt,R.drawable.nike_1,R.drawable.red_tape,R.drawable.nike_2,R.drawable.adidas,R.drawable.puma_1,R.drawable.puma_2};
     String[] descriptionArray = {
         "White and blue striped opaque casual shirt, has a spread collar, button placket, long regular sleeves, curved hem",
             "U S POLO ASSN BLACK CHECKED REGULAR FIT CASUAL SHIRT MEN",
-            "Men Cotton Plain Polo Neck Allen Solly Grey T Shirts"
+            "Men Cotton Plain Polo Neck Allen Solly Grey T Shirts","Men Revolution 6 Running Shoes","Men Surface Grip Walking Shoes","Men Quest Road Running Shoes","Men Wisefoma Running Shoes","Men Scorch Runner V2","Unisex Badminton Indoor Shoes"
     };
 
-    String[] priceArray = {"1999","1499","599"};
+    String[] priceArray = {"1999","1499","599","1799","1529","1799","2399","1849","1999"};
+
+    String[] brandArray = {"U.S.Polo","U.S.Polo","Allen Solly","NIKE","Red Tape","Nike","ADIDAS","Puma","Puma"};
 
     ArrayList<ProductList> arrayList;
 
@@ -54,8 +56,11 @@ public class ProductActivity extends AppCompatActivity {
         String subCategoryTableQuery = "CREATE TABLE IF NOT EXISTS SUBCATEGORY(SUBCATEGORYID INTEGER PRIMARY KEY,CATEGORYID VARCHAR(10),NAME VARCHAR(100),IMAGE VARCHAR(100))";
         db.execSQL(subCategoryTableQuery);
 
-        String productTableQuery = "CREATE TABLE IF NOT EXISTS PRODUCT(PRODUCTID INTEGER PRIMARY KEY,SUBCATEGORYID VARCHAR(10),CATEGORYID VARCHAR(10),NAME VARCHAR(100),IMAGE VARCHAR(100),PRICE VARCHAR(20),DESCRIPTION TEXT)";
+        String productTableQuery = "CREATE TABLE IF NOT EXISTS PRODUCT(PRODUCTID INTEGER PRIMARY KEY,SUBCATEGORYID VARCHAR(10),CATEGORYID VARCHAR(10),NAME VARCHAR(100),IMAGE VARCHAR(100),PRICE VARCHAR(20),DESCRIPTION TEXT,BRAND VARCHAR(20))";
         db.execSQL(productTableQuery);
+
+        String wishlistTableQuery = "CREATE TABLE IF NOT EXISTS WISHLIST(WISHLISTID INTEGER PRIMARY KEY, USERID VARCHAR(10), PRODUCTID VARCHAR(10))";
+        db.execSQL(wishlistTableQuery);
 
         for(int i=0;i<namerArray.length;i++){
             String selectQuery = "SELECT * FROM PRODUCT WHERE NAME='"+namerArray[i]+"' AND SUBCATEGORYID='"+subCategoryIdArray[i]+"' AND CATEGORYID='"+categoryIdArray[i]+"'";
@@ -64,7 +69,7 @@ public class ProductActivity extends AppCompatActivity {
 
             }
             else {
-                String insertQuery = "INSERT INTO PRODUCT VALUES(NULL,'"+subCategoryIdArray[i]+"','"+categoryIdArray[i]+"','" + namerArray[i] + "','" + imageArray[i] + "','"+priceArray[i]+"','"+descriptionArray[i]+"')";
+                String insertQuery = "INSERT INTO PRODUCT VALUES(NULL,'"+subCategoryIdArray[i]+"','"+categoryIdArray[i]+"','" + namerArray[i] + "','" + imageArray[i] + "','"+priceArray[i]+"','"+descriptionArray[i]+"','"+brandArray[i]+"')";
                 db.execSQL(insertQuery);
             }
         }
@@ -92,10 +97,21 @@ public class ProductActivity extends AppCompatActivity {
                 list.setImage(cursor.getString(4));
                 list.setPrice(cursor.getString(5));
                 list.setDescription(cursor.getString(6));
+                list.setBrand(cursor.getString(7));
+
+                String wishlistSelectQuery = "SELECT * FROM WISHLIST WHERE USERID='"+sp.getString(ConstantSp.USERID,"")+"' AND PRODUCTID='"+cursor.getString(0)+"'";
+                Cursor cursor1 = db.rawQuery(wishlistSelectQuery,null);
+                if(cursor1.getCount()>0){
+                    list.setWishlist(true);
+                }
+                else{
+                    list.setWishlist(false);
+                }
+
                 arrayList.add(list);
             }
             //CategoryAdapter adapter = new CategoryAdapter(CategoryActivity.this,namerArray,imageArray);
-            ProductAdapter adapter = new ProductAdapter(ProductActivity.this, arrayList);
+            ProductAdapter adapter = new ProductAdapter(ProductActivity.this, arrayList,db);
             recyclerView.setAdapter(adapter);
         }
         else{
