@@ -19,7 +19,7 @@ public class DashboardActivity extends AppCompatActivity {
     TextView name;
     SharedPreferences sp;
 
-    Button profile,logout,category,wishlist;
+    Button profile,logout,category,wishlist,cart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +80,14 @@ public class DashboardActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 new CommonMethod(DashboardActivity.this, WishlistActivity.class);
+            }
+        });
+
+        cart = findViewById(R.id.dashboard_cart);
+        cart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new CommonMethod(DashboardActivity.this, CartActivity.class);
             }
         });
 

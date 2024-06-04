@@ -4,6 +4,10 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -40,6 +44,9 @@ public class ProductActivity extends AppCompatActivity {
     SQLiteDatabase db;
     SharedPreferences sp;
 
+    Spinner spinner;
+    String[] brandsArray = {"All","U.S.Polo","Allen Solly","NIKE","Red Tape","ADIDAS","Puma"};
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +68,9 @@ public class ProductActivity extends AppCompatActivity {
 
         String wishlistTableQuery = "CREATE TABLE IF NOT EXISTS WISHLIST(WISHLISTID INTEGER PRIMARY KEY, USERID VARCHAR(10), PRODUCTID VARCHAR(10))";
         db.execSQL(wishlistTableQuery);
+
+        String cartTableQuery = "CREATE TABLE IF NOT EXISTS CART(CARTID INTEGER PRIMARY KEY, USERID VARCHAR(10),ORDERID VARCHAR(10), PRODUCTID VARCHAR(10), QTY VARCHAR(10))";
+        db.execSQL(cartTableQuery);
 
         for(int i=0;i<namerArray.length;i++){
             String selectQuery = "SELECT * FROM PRODUCT WHERE NAME='"+namerArray[i]+"' AND SUBCATEGORYID='"+subCategoryIdArray[i]+"' AND CATEGORYID='"+categoryIdArray[i]+"'";
@@ -84,7 +94,36 @@ public class ProductActivity extends AppCompatActivity {
 
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        String selectQuery = "SELECT * FROM PRODUCT WHERE SUBCATEGORYID='"+sp.getString(ConstantSp.SUB_CATEGORY_ID,"")+"'";
+        spinner = findViewById(R.id.product_brand);
+        ArrayAdapter brandAdapter = new ArrayAdapter(ProductActivity.this, android.R.layout.simple_list_item_1,brandsArray);
+        spinner.setAdapter(brandAdapter);
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if(i==0){
+                    setData("");
+                }
+                else{
+                    setData(brandsArray[i]);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+    }
+
+    private void setData(String sBrand) {
+        String selectQuery;
+        if(sBrand.equalsIgnoreCase("")) {
+            selectQuery = "SELECT * FROM PRODUCT WHERE SUBCATEGORYID='" + sp.getString(ConstantSp.SUB_CATEGORY_ID, "") + "'";
+        }
+        else{
+            selectQuery = "SELECT * FROM PRODUCT WHERE SUBCATEGORYID='" + sp.getString(ConstantSp.SUB_CATEGORY_ID, "") + "' AND BRAND LIKE '%"+sBrand+"%'";
+        }
         Cursor cursor = db.rawQuery(selectQuery,null);
         if(cursor.getCount()>0) {
             arrayList = new ArrayList<>();

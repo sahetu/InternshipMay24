@@ -4,18 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ProductActivity">
-
-    <Spinner
-        android:layout_margin="@dimen/_10sdp"
-        android:id="@+id/product_brand"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+    tools:context=".CartActivity">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:layout_marginTop="@dimen/_20sdp"
-        android:layout_below="@id/product_brand"
-        android:id="@+id/product_recyclerview"
+        android:id="@+id/cart_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 

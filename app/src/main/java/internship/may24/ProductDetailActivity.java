@@ -50,6 +50,9 @@ public class ProductDetailActivity extends AppCompatActivity {
         String wishlistTableQuery = "CREATE TABLE IF NOT EXISTS WISHLIST(WISHLISTID INTEGER PRIMARY KEY, USERID VARCHAR(10), PRODUCTID VARCHAR(10))";
         db.execSQL(wishlistTableQuery);
 
+        String cartTableQuery = "CREATE TABLE IF NOT EXISTS CART(CARTID INTEGER PRIMARY KEY, USERID VARCHAR(10),ORDERID VARCHAR(10), PRODUCTID VARCHAR(10), QTY VARCHAR(10))";
+        db.execSQL(cartTableQuery);
+
         imageView = findViewById(R.id.product_detail_image);
         name = findViewById(R.id.product_detail_name);
         price = findViewById(R.id.product_detail_price);
@@ -70,6 +73,23 @@ public class ProductDetailActivity extends AppCompatActivity {
         }
 
         addCart = findViewById(R.id.product_detail_cart);
+        addCart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String selectCartQuery = "SELECT * FROM CART WHERE PRODUCTID='"+sp.getString(ConstantSp.PRODUCT_ID,"")+"' AND USERID='"+sp.getString(ConstantSp.USERID,"")+"' AND ORDERID='0'";
+                Cursor cursor1 = db.rawQuery(selectCartQuery,null);
+                if(cursor1.getCount()>0){
+                    new CommonMethod(ProductDetailActivity.this,"Product Already Added In Cart");
+                }
+                else{
+                    String cartQuery = "INSERT INTO CART VALUES (NULL,'"+sp.getString(ConstantSp.USERID,"")+"','0','"+sp.getString(ConstantSp.PRODUCT_ID,"")+"','1')";
+                    db.execSQL(cartQuery);
+                    new CommonMethod(ProductDetailActivity.this,"Product Added In Cart");
+                }
+            }
+        });
+
+
         wishlist = findViewById(R.id.product_detail_wishlist);
 
         String wishlistSelectQuery = "SELECT * FROM WISHLIST WHERE USERID='"+sp.getString(ConstantSp.USERID,"")+"' AND PRODUCTID='"+sp.getString(ConstantSp.PRODUCT_ID,"")+"'";
