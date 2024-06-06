@@ -4,6 +4,9 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,10 +21,17 @@ import java.util.ArrayList;
 
 public class CartActivity extends AppCompatActivity {
 
+    public static TextView total;
+    TextView checkout;
+
+    public static RelativeLayout dataLayout,emptyLayout;
+
     RecyclerView recyclerView;
     ArrayList<CartList> arrayList;
     SQLiteDatabase db;
     SharedPreferences sp;
+
+    public static int iCartTotal = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +57,12 @@ public class CartActivity extends AppCompatActivity {
 
         String cartTableQuery = "CREATE TABLE IF NOT EXISTS CART(CARTID INTEGER PRIMARY KEY, USERID VARCHAR(10),ORDERID VARCHAR(10), PRODUCTID VARCHAR(10), QTY VARCHAR(10))";
         db.execSQL(cartTableQuery);
+
+        total = findViewById(R.id.cart_total);
+        checkout = findViewById(R.id.cart_checkout);
+
+        dataLayout = findViewById(R.id.cart_data_layout);
+        emptyLayout = findViewById(R.id.cart_empty_layout);
 
         recyclerView = findViewById(R.id.cart_recyclerview);
         //Set As List
@@ -76,6 +92,8 @@ public class CartActivity extends AppCompatActivity {
                     list.setImage(cursorProduct.getString(4));
                     list.setPrice(cursorProduct.getString(5));
                     list.setDescription(cursorProduct.getString(6));
+                    //iCartTotal = iCartTotal + Integer.parseInt(cursorProduct.getString(5))* Integer.parseInt(cursor.getString(4));
+                    iCartTotal += Integer.parseInt(cursorProduct.getString(5))* Integer.parseInt(cursor.getString(4));
                 }
                 list.setQty(cursor.getString(4));
                 arrayList.add(list);
@@ -83,9 +101,16 @@ public class CartActivity extends AppCompatActivity {
             //CategoryAdapter adapter = new CategoryAdapter(CategoryActivity.this,namerArray,imageArray);
             CartAdapter adapter = new CartAdapter(CartActivity.this, arrayList,sp,db);
             recyclerView.setAdapter(adapter);
+            total.setText("Total : "+ConstantSp.PRICE_SYMBOL+String.valueOf(iCartTotal));
+
+            dataLayout.setVisibility(View.VISIBLE);
+            emptyLayout.setVisibility(View.GONE);
+
         }
         else{
-            new CommonMethod(CartActivity.this,"No Any Product Added In Wishlist");
+            //new CommonMethod(CartActivity.this,"No Any Product Added In Wishlist");
+            dataLayout.setVisibility(View.GONE);
+            emptyLayout.setVisibility(View.VISIBLE);
         }
 
     }
