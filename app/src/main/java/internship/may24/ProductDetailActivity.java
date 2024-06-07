@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -26,6 +27,12 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     ImageView wishlist,addCart;
     boolean isWishlist = false;
+
+    LinearLayout cartLayout;
+    ImageView plus,minus;
+    TextView qty;
+
+    int iQty = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +65,28 @@ public class ProductDetailActivity extends AppCompatActivity {
         price = findViewById(R.id.product_detail_price);
         description = findViewById(R.id.product_detail_description);
 
+        cartLayout = findViewById(R.id.product_detail_cart_layout);
+        plus = findViewById(R.id.product_detail_plus);
+        qty = findViewById(R.id.product_detail_qty);
+        minus = findViewById(R.id.product_detail_minus);
+
+        addCart = findViewById(R.id.product_detail_cart);
+
+        String cartQuery = "SELECT * FROM CART WHERE USERID='"+sp.getString(ConstantSp.USERID,"")+"' AND PRODUCTID='"+sp.getString(ConstantSp.PRODUCT_ID,"")+"' AND ORDERID='0'";
+        Cursor cartCursor = db.rawQuery(cartQuery,null);
+        if(cartCursor.getCount()>0){
+            while (cartCursor.moveToNext()){
+                iQty = Integer.parseInt(cartCursor.getString(4));
+            }
+            qty.setText(String.valueOf(iQty));
+            addCart.setVisibility(View.GONE);
+            cartLayout.setVisibility(View.VISIBLE);
+        }
+        else{
+            addCart.setVisibility(View.VISIBLE);
+            cartLayout.setVisibility(View.GONE);
+        }
+
         String selectQuery = "SELECT * FROM PRODUCT WHERE PRODUCTID='"+sp.getString(ConstantSp.PRODUCT_ID,"")+"'";
         Cursor cursor = db.rawQuery(selectQuery,null);
         if(cursor.getCount()>0) {
@@ -72,7 +101,7 @@ public class ProductDetailActivity extends AppCompatActivity {
             new CommonMethod(ProductDetailActivity.this,"Product Not Found");
         }
 
-        addCart = findViewById(R.id.product_detail_cart);
+
         addCart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -84,7 +113,42 @@ public class ProductDetailActivity extends AppCompatActivity {
                 else{
                     String cartQuery = "INSERT INTO CART VALUES (NULL,'"+sp.getString(ConstantSp.USERID,"")+"','0','"+sp.getString(ConstantSp.PRODUCT_ID,"")+"','1')";
                     db.execSQL(cartQuery);
+                    iQty = 1;
+                    addCart.setVisibility(View.GONE);
+                    cartLayout.setVisibility(View.VISIBLE);
+                    qty.setText(String.valueOf(iQty));
                     new CommonMethod(ProductDetailActivity.this,"Product Added In Cart");
+                }
+            }
+        });
+
+        plus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                iQty += 1;
+                updateCart(iQty);
+            }
+        });
+
+        minus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                iQty -= 1;
+                if(iQty<=0){
+                    String selectCartQuery = "SELECT * FROM CART WHERE PRODUCTID='"+sp.getString(ConstantSp.PRODUCT_ID,"")+"' AND USERID='"+sp.getString(ConstantSp.USERID,"")+"' AND ORDERID='0'";
+                    Cursor cursor1 = db.rawQuery(selectCartQuery,null);
+                    if(cursor1.getCount()>0){
+                        while (cursor1.moveToNext()) {
+                            String deleteQuery = "DELETE FROM CART WHERE CARTID='" + cursor1.getString(0) + "'";
+                            db.execSQL(deleteQuery);
+                            iQty = 0;
+                            addCart.setVisibility(View.VISIBLE);
+                            cartLayout.setVisibility(View.GONE);
+                        }
+                    }
+                }
+                else {
+                    updateCart(iQty);
                 }
             }
         });
@@ -121,5 +185,17 @@ public class ProductDetailActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void updateCart(int iQty) {
+        String selectCartQuery = "SELECT * FROM CART WHERE PRODUCTID='"+sp.getString(ConstantSp.PRODUCT_ID,"")+"' AND USERID='"+sp.getString(ConstantSp.USERID,"")+"' AND ORDERID='0'";
+        Cursor cursor1 = db.rawQuery(selectCartQuery,null);
+        if(cursor1.getCount()>0){
+            while (cursor1.moveToNext()) {
+                String updateQuery = "UPDATE CART SET QTY = '" + iQty + "' WHERE CARTID='" + cursor1.getString(0) + "' ";
+                db.execSQL(updateQuery);
+            }
+        }
+        qty.setText(String.valueOf(iQty));
     }
 }

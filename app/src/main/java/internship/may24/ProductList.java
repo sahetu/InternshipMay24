@@ -4,6 +4,24 @@ public class ProductList {
 
 String id,categoryId,subCategoryId,name,image,description,price,brand;
 boolean isWishlist = false;
+int iQty;
+String sCartId;
+
+    public int getiQty() {
+        return iQty;
+    }
+
+    public void setiQty(int iQty) {
+        this.iQty = iQty;
+    }
+
+    public String getsCartId() {
+        return sCartId;
+    }
+
+    public void setsCartId(String sCartId) {
+        this.sCartId = sCartId;
+    }
 
     public boolean isWishlist() {
         return isWishlist;

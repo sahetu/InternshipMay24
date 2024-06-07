@@ -35,28 +35,56 @@
             android:id="@+id/product_detail_description"
             style="@style/text_13"
             android:layout_marginTop="@dimen/_3sdp"
-            android:textColor="@color/black"/>
+            android:textColor="@color/black" />
 
         <LinearLayout
-            android:layout_marginTop="@dimen/_20sdp"
-            android:gravity="center"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:gravity="center">
 
             <ImageView
                 android:id="@+id/product_detail_wishlist"
-                android:padding="@dimen/_2sdp"
-                android:src="@drawable/wishlist_empty"
                 android:layout_width="@dimen/_35sdp"
-                android:layout_height="@dimen/_35sdp"/>
+                android:layout_height="@dimen/_35sdp"
+                android:padding="@dimen/_2sdp"
+                android:src="@drawable/wishlist_empty" />
 
             <ImageView
-                android:layout_marginLeft="@dimen/_10sdp"
                 android:id="@+id/product_detail_cart"
-                android:padding="@dimen/_2sdp"
-                android:src="@drawable/add_cart"
                 android:layout_width="@dimen/_35sdp"
-                android:layout_height="@dimen/_35sdp"/>
+                android:layout_height="@dimen/_35sdp"
+                android:layout_marginLeft="@dimen/_10sdp"
+                android:padding="@dimen/_2sdp"
+                android:src="@drawable/add_cart" />
+
+            <LinearLayout
+                android:layout_marginLeft="@dimen/_10sdp"
+                android:id="@+id/product_detail_cart_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/product_detail_minus"
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_20sdp"
+                    android:padding="@dimen/_2sdp"
+                    android:src="@drawable/minus" />
+
+                <TextView
+                    android:id="@+id/product_detail_qty"
+                    style="@style/text_bold_20"
+                    android:layout_marginHorizontal="@dimen/_10sdp"
+                    android:textColor="@color/black" />
+
+                <ImageView
+                    android:id="@+id/product_detail_plus"
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_20sdp"
+                    android:padding="@dimen/_2sdp"
+                    android:src="@drawable/plus" />
+
+            </LinearLayout>
 
         </LinearLayout>
 

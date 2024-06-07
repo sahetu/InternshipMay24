@@ -21,10 +21,10 @@
             android:layout_height="@dimen/_70sdp" />
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/_10sdp">
+            android:layout_marginLeft="@dimen/_10sdp"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/custom_product_name"
@@ -43,9 +43,9 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:layout_marginLeft="@dimen/_5sdp"
                     android:id="@+id/custom_product_price"
                     style="@style/text_16"
+                    android:layout_marginLeft="@dimen/_5sdp"
                     android:layout_marginTop="@dimen/_3sdp"
                     android:textColor="@color/black"
                     android:textStyle="bold" />
@@ -72,6 +72,35 @@
                     android:layout_marginLeft="@dimen/_10sdp"
                     android:padding="@dimen/_2sdp"
                     android:src="@drawable/add_cart" />
+
+                <LinearLayout
+                    android:id="@+id/custom_product_cart_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="@dimen/_10sdp">
+
+                    <ImageView
+                        android:id="@+id/custom_product_minus"
+                        android:layout_width="@dimen/_20sdp"
+                        android:layout_height="@dimen/_20sdp"
+                        android:padding="@dimen/_2sdp"
+                        android:src="@drawable/minus" />
+
+                    <TextView
+                        android:id="@+id/custom_product_qty"
+                        style="@style/text_bold_20"
+                        android:layout_marginHorizontal="@dimen/_10sdp"
+                        android:textColor="@color/black" />
+
+                    <ImageView
+                        android:id="@+id/custom_product_plus"
+                        android:layout_width="@dimen/_20sdp"
+                        android:layout_height="@dimen/_20sdp"
+                        android:padding="@dimen/_2sdp"
+                        android:src="@drawable/plus" />
+
+                </LinearLayout>
 
             </LinearLayout>
 

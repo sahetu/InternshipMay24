@@ -147,6 +147,19 @@ public class ProductActivity extends AppCompatActivity {
                     list.setWishlist(false);
                 }
 
+                String selectCartQuery = "SELECT * FROM CART WHERE PRODUCTID='"+cursor.getString(0)+"' AND USERID='"+sp.getString(ConstantSp.USERID,"")+"' AND ORDERID='0'";
+                Cursor cartCursor = db.rawQuery(selectCartQuery,null);
+                if(cartCursor.getCount()>0){
+                    while (cartCursor.moveToNext()){
+                        list.setsCartId(cartCursor.getString(0));
+                        list.setiQty(Integer.parseInt(cartCursor.getString(4)));
+                    }
+                }
+                else{
+                    list.setiQty(0);
+                    list.setsCartId("");
+                }
+
                 arrayList.add(list);
             }
             //CategoryAdapter adapter = new CategoryAdapter(CategoryActivity.this,namerArray,imageArray);
