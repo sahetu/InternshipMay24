@@ -22,4 +22,6 @@ public class ConstantSp {
 
     public static final String PRODUCT_ID = "product_id";
 
+    public static final String TOTAL_AMOUNT = "total_amount";
+
 }

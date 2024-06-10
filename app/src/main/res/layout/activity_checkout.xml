@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/custom_background"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context=".CheckoutActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginVertical="@dimen/_20sdp"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/checkout_name"
+                style="@style/edit_18"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:drawableLeft="@drawable/people"
+                android:hint="Name" />
+
+            <EditText
+                android:id="@+id/checkout_email"
+                style="@style/edit_18"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:drawableLeft="@drawable/people"
+                android:hint="Email Id"
+                android:inputType="textEmailAddress" />
+
+            <EditText
+                android:id="@+id/checkout_contact"
+                style="@style/edit_18"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:drawableLeft="@drawable/people"
+                android:hint="Contact No."
+                android:inputType="phone"
+                android:maxLength="10" />
+
+            <EditText
+                android:id="@+id/checkout_address"
+                style="@style/edit_18"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:drawableLeft="@drawable/people"
+                android:gravity="start"
+                android:hint="Address"
+                android:minLines="3" />
+
+            <Spinner
+                android:id="@+id/checkout_city"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_20sdp"
+                android:layout_marginTop="@dimen/_10sdp" />
+
+            <EditText
+                android:id="@+id/checkout_pincode"
+                style="@style/edit_18"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:drawableLeft="@drawable/people"
+                android:hint="Pincode"
+                android:inputType="number"
+                android:maxLength="6" />
+
+            <RadioGroup
+                android:id="@+id/checkout_payvia"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_20sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/checkout_cod"
+                    style="@style/radio_18"
+                    android:layout_weight="1"
+                    android:text="COD" />
+
+                <RadioButton
+                    android:id="@+id/checkout_online"
+                    style="@style/radio_18"
+                    android:layout_weight="1"
+                    android:text="Online" />
+
+            </RadioGroup>
+
+            <Button
+                android:id="@+id/checkout_button"
+                style="@style/button_20"
+                android:layout_marginHorizontal="@dimen/_20sdp"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:layout_weight="1"
+                android:text="Pay Now : 2000" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

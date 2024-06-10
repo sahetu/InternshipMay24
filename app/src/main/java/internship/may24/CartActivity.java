@@ -113,5 +113,13 @@ public class CartActivity extends AppCompatActivity {
             emptyLayout.setVisibility(View.VISIBLE);
         }
 
+        checkout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sp.edit().putString(ConstantSp.TOTAL_AMOUNT, String.valueOf(iCartTotal)).commit();
+                new CommonMethod(CartActivity.this,CheckoutActivity.class);
+            }
+        });
+
     }
 }
