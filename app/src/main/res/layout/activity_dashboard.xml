@@ -34,6 +34,12 @@
         android:text="Cart" />
 
     <Button
+        android:id="@+id/dashboard_my_orders"
+        style="@style/button_20"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:text="My Orders" />
+
+    <Button
         android:id="@+id/dashboard_profile"
         style="@style/button_20"
         android:layout_marginTop="@dimen/_10sdp"

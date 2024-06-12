@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/_10sdp"
+    android:layout_marginVertical="@dimen/_5sdp"
+    app:cardCornerRadius="@dimen/_5sdp"
+    app:cardElevation="@dimen/_3sdp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/_5sdp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+
+            <TextView
+                android:textStyle="bold"
+                android:id="@+id/custom_order_id"
+                style="@style/text_16"
+                android:layout_weight="1"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/custom_order_amount"
+                style="@style/text_16"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:textColor="@color/black" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/custom_order_name"
+            style="@style/text_16"
+            android:layout_marginTop="@dimen/_2sdp"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/custom_order_address"
+            style="@style/text_13"
+            android:layout_marginTop="@dimen/_2sdp"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/custom_order_payvia"
+            style="@style/text_13"
+            android:layout_marginTop="@dimen/_2sdp"
+            android:textColor="@color/black" />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
