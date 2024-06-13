@@ -1,6 +1,7 @@
 package internship.may24;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,9 +16,12 @@ public class MyOrderAdapter extends RecyclerView.Adapter<MyOrderAdapter.MyHolder
 
     Context context;
     ArrayList<MyOrderList> arrayList;
+    SharedPreferences sp;
+
     public MyOrderAdapter(Context context, ArrayList<MyOrderList> arrayList) {
         this.context = context;
         this.arrayList = arrayList;
+        sp = context.getSharedPreferences(ConstantSp.PREF,Context.MODE_PRIVATE);
     }
 
     @NonNull
@@ -54,6 +58,14 @@ public class MyOrderAdapter extends RecyclerView.Adapter<MyOrderAdapter.MyHolder
         else{
             holder.payvia.setText(arrayList.get(position).getPayVia()+" ("+arrayList.get(position).getTransactionId()+")");
         }
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sp.edit().putString(ConstantSp.ORDER_ID,arrayList.get(position).getOrderId()).commit();
+                new CommonMethod(context, OrderDetailActivity.class);
+            }
+        });
 
     }
 
