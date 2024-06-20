@@ -1,9 +1,12 @@
 package internship.may24;
 
+import android.app.ProgressDialog;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -20,6 +23,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
 
 public class SignupActivity extends AppCompatActivity {
 
@@ -194,22 +202,78 @@ public class SignupActivity extends AppCompatActivity {
                     new CommonMethod(SignupActivity.this,"Please Accept Terms & Conditions");
                 }
                 else{
-                    String selectQuery = "SELECT * FROM USERS WHERE USERNAME = '"+username.getText().toString()+"' OR EMAIL='"+email.getText().toString()+"' OR CONTACT='"+contact.getText().toString()+"'";
-                    Cursor cursor = db.rawQuery(selectQuery,null);
-                    if(cursor.getCount()>0){
-                        new CommonMethod(SignupActivity.this, "Username/Email Id/Contact No. Already Registered");
-                        new CommonMethod(view, "Username/Email Id/Contact No. Already Registered");
+                    //doSqliteSignup(view);
+                    if(new ConnectionDetector(SignupActivity.this).networkConnected()){
+                        new doSignup().execute();
                     }
-                    else {
-                        String insertQuery = "INSERT INTO USERS VALUES(NULL,'" + username.getText().toString() + "','" + name.getText().toString() + "','" + email.getText().toString() + "','" + contact.getText().toString() + "','" + password.getText().toString() + "','" + sGender + "','" + sCity + "')";
-                        db.execSQL(insertQuery);
-                        new CommonMethod(SignupActivity.this, "Signup Successfully");
-                        new CommonMethod(view, "Signup Successfully");
-                        onBackPressed();
+                    else{
+                        new ConnectionDetector(SignupActivity.this).networkDisconnected();
                     }
                 }
             }
         });
 
+    }
+
+    private void doSqliteSignup(View view) {
+        String selectQuery = "SELECT * FROM USERS WHERE USERNAME = '"+username.getText().toString()+"' OR EMAIL='"+email.getText().toString()+"' OR CONTACT='"+contact.getText().toString()+"'";
+        Cursor cursor = db.rawQuery(selectQuery,null);
+        if(cursor.getCount()>0){
+            new CommonMethod(SignupActivity.this, "Username/Email Id/Contact No. Already Registered");
+            new CommonMethod(view, "Username/Email Id/Contact No. Already Registered");
+        }
+        else {
+            String insertQuery = "INSERT INTO USERS VALUES(NULL,'" + username.getText().toString() + "','" + name.getText().toString() + "','" + email.getText().toString() + "','" + contact.getText().toString() + "','" + password.getText().toString() + "','" + sGender + "','" + sCity + "')";
+            db.execSQL(insertQuery);
+            new CommonMethod(SignupActivity.this, "Signup Successfully");
+            new CommonMethod(view, "Signup Successfully");
+            onBackPressed();
+        }
+    }
+
+    private class doSignup extends AsyncTask<String,String,String> {
+
+        ProgressDialog pd;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pd = new ProgressDialog(SignupActivity.this);
+            pd.setMessage("Please Wait...");
+            pd.setCancelable(false);
+            pd.show();
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            HashMap<String,String> hashMap = new HashMap<>();
+            hashMap.put("username",username.getText().toString());
+            hashMap.put("name",name.getText().toString());
+            hashMap.put("email",email.getText().toString());
+            hashMap.put("contact",contact.getText().toString());
+            hashMap.put("password",password.getText().toString());
+            hashMap.put("gender",sGender);
+            hashMap.put("city",sCity);
+            return new MakeServiceCall().MakeServiceCall("http://192.168.176.61/internship_may_api/signup.php",MakeServiceCall.POST,hashMap);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            pd.dismiss();
+            try {
+                JSONObject object = new JSONObject(s);
+                if(object.getBoolean("Status")){
+                    new CommonMethod(SignupActivity.this, object.getString("Message"));
+                    onBackPressed();
+                }
+                else{
+                    new CommonMethod(SignupActivity.this, object.getString("Message"));
+                }
+            } catch (JSONException e) {
+                //throw new RuntimeException(e);
+                Log.d("RESPONSE_CATCH",e.getMessage().toString());
+            }
+        }
     }
 }
