@@ -1,10 +1,13 @@
 package internship.may24;
 
+import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -22,6 +25,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -199,28 +207,12 @@ public class ProfileActivity extends AppCompatActivity {
                     new CommonMethod(ProfileActivity.this,"Please Select City");
                 }
                 else{
-                    String selectQuery = "SELECT * FROM USERS WHERE USERID = '"+sp.getString(ConstantSp.USERID,"")+"'";
-                    Cursor cursor = db.rawQuery(selectQuery,null);
-                    if(cursor.getCount()>0){
-                        String updateQuery = "UPDATE USERS SET USERNAME='"+username.getText().toString()+"',NAME='"+name.getText().toString()+"',EMAIL='"+email.getText().toString()+"',CONTACT='"+contact.getText().toString()+"',PASSWORD='"+password.getText().toString()+"',GENDER='"+sGender+"',CITY='"+sCity+"' WHERE USERID='"+sp.getString(ConstantSp.USERID,"")+"'";
-                        db.execSQL(updateQuery);
-                        new CommonMethod(ProfileActivity.this, "Profile Update Successfully");
-                        new CommonMethod(view, "Profile Update Successfully");
-
-                        sp.edit().putString(ConstantSp.USERNAME,username.getText().toString()).commit();
-                        sp.edit().putString(ConstantSp.NAME,name.getText().toString()).commit();
-                        sp.edit().putString(ConstantSp.EMAIL,email.getText().toString()).commit();
-                        sp.edit().putString(ConstantSp.CONTACT,contact.getText().toString()).commit();
-                        sp.edit().putString(ConstantSp.PASSWORD,password.getText().toString()).commit();
-                        sp.edit().putString(ConstantSp.GENDER,sGender).commit();
-                        sp.edit().putString(ConstantSp.CITY,sCity).commit();
-
-                        setData(false);
-
+                    //doSqliteProfile(view);
+                    if(new ConnectionDetector(ProfileActivity.this).networkConnected()){
+                        new doUpdate().execute();
                     }
-                    else {
-                        new CommonMethod(ProfileActivity.this, "Invalid User");
-                        new CommonMethod(view, "Invalid User");
+                    else{
+                        new ConnectionDetector(ProfileActivity.this).networkDisconnected();
                     }
                 }
             }
@@ -235,6 +227,32 @@ public class ProfileActivity extends AppCompatActivity {
 
         setData(false);
         
+    }
+
+    private void doSqliteProfile(View view) {
+        String selectQuery = "SELECT * FROM USERS WHERE USERID = '"+sp.getString(ConstantSp.USERID,"")+"'";
+        Cursor cursor = db.rawQuery(selectQuery,null);
+        if(cursor.getCount()>0){
+            String updateQuery = "UPDATE USERS SET USERNAME='"+username.getText().toString()+"',NAME='"+name.getText().toString()+"',EMAIL='"+email.getText().toString()+"',CONTACT='"+contact.getText().toString()+"',PASSWORD='"+password.getText().toString()+"',GENDER='"+sGender+"',CITY='"+sCity+"' WHERE USERID='"+sp.getString(ConstantSp.USERID,"")+"'";
+            db.execSQL(updateQuery);
+            new CommonMethod(ProfileActivity.this, "Profile Update Successfully");
+            new CommonMethod(view, "Profile Update Successfully");
+
+            sp.edit().putString(ConstantSp.USERNAME,username.getText().toString()).commit();
+            sp.edit().putString(ConstantSp.NAME,name.getText().toString()).commit();
+            sp.edit().putString(ConstantSp.EMAIL,email.getText().toString()).commit();
+            sp.edit().putString(ConstantSp.CONTACT,contact.getText().toString()).commit();
+            sp.edit().putString(ConstantSp.PASSWORD,password.getText().toString()).commit();
+            sp.edit().putString(ConstantSp.GENDER,sGender).commit();
+            sp.edit().putString(ConstantSp.CITY,sCity).commit();
+
+            setData(false);
+
+        }
+        else {
+            new CommonMethod(ProfileActivity.this, "Invalid User");
+            new CommonMethod(view, "Invalid User");
+        }
     }
 
     private void setData(boolean b) {
@@ -294,5 +312,59 @@ public class ProfileActivity extends AppCompatActivity {
             confirmPassLayout.setVisibility(View.GONE);
         }
 
+    }
+
+    private class doUpdate extends AsyncTask<String,String,String> {
+
+        ProgressDialog pd;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pd = new ProgressDialog(ProfileActivity.this);
+            pd.setMessage("Please Wait...");
+            pd.setCancelable(false);
+            pd.show();
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            HashMap<String,String> hashMap = new HashMap<>();
+            hashMap.put("userName",username.getText().toString());
+            hashMap.put("name",name.getText().toString());
+            hashMap.put("email",email.getText().toString());
+            hashMap.put("contact",contact.getText().toString());
+            hashMap.put("gender",sGender);
+            hashMap.put("city",sCity);
+            hashMap.put("userId",sp.getString(ConstantSp.USERID,""));
+            return new MakeServiceCall().MakeServiceCall(ConstantSp.UPDATE_URL,MakeServiceCall.POST,hashMap);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            pd.dismiss();
+            try {
+                JSONObject object = new JSONObject(s);
+                if(object.getBoolean("Status")){
+                    new CommonMethod(ProfileActivity.this, object.getString("Message"));
+                    sp.edit().putString(ConstantSp.USERNAME,username.getText().toString()).commit();
+                    sp.edit().putString(ConstantSp.NAME,name.getText().toString()).commit();
+                    sp.edit().putString(ConstantSp.EMAIL,email.getText().toString()).commit();
+                    sp.edit().putString(ConstantSp.CONTACT,contact.getText().toString()).commit();
+                    sp.edit().putString(ConstantSp.PASSWORD,password.getText().toString()).commit();
+                    sp.edit().putString(ConstantSp.GENDER,sGender).commit();
+                    sp.edit().putString(ConstantSp.CITY,sCity).commit();
+
+                    setData(false);
+                }
+                else{
+                    new CommonMethod(ProfileActivity.this, object.getString("Message"));
+                }
+            } catch (JSONException e) {
+                //throw new RuntimeException(e);
+                Log.d("RESPONSE_CATCH",e.getMessage().toString());
+            }
+        }
     }
 }

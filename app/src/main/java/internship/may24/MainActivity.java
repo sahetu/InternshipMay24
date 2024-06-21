@@ -1,10 +1,12 @@
 package internship.may24;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Paint;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
@@ -22,6 +24,12 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.snackbar.Snackbar;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -101,42 +109,12 @@ public class MainActivity extends AppCompatActivity {
                     password.setError("Min. 6 Char Password Required");
                 }
                 else{
-                    String selectQuery = "SELECT * FROM USERS WHERE (USERNAME='"+username.getText().toString()+"' OR CONTACT='"+username.getText().toString()+"' OR EMAIL='"+username.getText().toString()+"') AND PASSWORD='"+password.getText().toString()+"'";
-                    Cursor cursor = db.rawQuery(selectQuery,null);
-                    if(cursor.getCount()>0){
-
-                        while(cursor.moveToNext()){
-                            String sUserId = cursor.getString(0);
-                            String sUserName = cursor.getString(1);
-                            String sName = cursor.getString(2);
-                            String sEmail = cursor.getString(3);
-                            String sContact = cursor.getString(4);
-                            String sPassword = cursor.getString(5);
-                            String sGender = cursor.getString(6);
-                            String sCity = cursor.getString(7);
-
-                            sp.edit().putString(ConstantSp.USERID,sUserId).commit();
-                            sp.edit().putString(ConstantSp.USERNAME,sUserName).commit();
-                            sp.edit().putString(ConstantSp.NAME,sName).commit();
-                            sp.edit().putString(ConstantSp.EMAIL,sEmail).commit();
-                            sp.edit().putString(ConstantSp.CONTACT,sContact).commit();
-                            sp.edit().putString(ConstantSp.PASSWORD,sPassword).commit();
-                            sp.edit().putString(ConstantSp.GENDER,sGender).commit();
-                            sp.edit().putString(ConstantSp.CITY,sCity).commit();
-                        }
-
-                        System.out.println("Login Successfully");
-                        Log.d("RESPONSE","Login Successfully");
-                        //Toast.makeText(MainActivity.this, "Login Successfully", Toast.LENGTH_SHORT).show();
-                        new CommonMethod(MainActivity.this, "Login Successfully");
-                        //Snackbar.make(view,"Login Successfully",Snackbar.LENGTH_LONG).show();
-                        new CommonMethod(view,"Login Successfully");
-                        /*Intent intent = new Intent(MainActivity.this,DashboardActivity.class);
-                        startActivity(intent);*/
-                        new CommonMethod(MainActivity.this,DashboardActivity.class);
+                    //doSqliteLogin(view);
+                    if(new ConnectionDetector(MainActivity.this).networkConnected()){
+                        new doLogin().execute();
                     }
                     else{
-                        new CommonMethod(MainActivity.this,"Invalid Credential");
+                        new ConnectionDetector(MainActivity.this).networkDisconnected();
                     }
                 }
             }
@@ -160,5 +138,98 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void doSqliteLogin(View view) {
+        String selectQuery = "SELECT * FROM USERS WHERE (USERNAME='"+username.getText().toString()+"' OR CONTACT='"+username.getText().toString()+"' OR EMAIL='"+username.getText().toString()+"') AND PASSWORD='"+password.getText().toString()+"'";
+        Cursor cursor = db.rawQuery(selectQuery,null);
+        if(cursor.getCount()>0){
+
+            while(cursor.moveToNext()){
+                String sUserId = cursor.getString(0);
+                String sUserName = cursor.getString(1);
+                String sName = cursor.getString(2);
+                String sEmail = cursor.getString(3);
+                String sContact = cursor.getString(4);
+                String sPassword = cursor.getString(5);
+                String sGender = cursor.getString(6);
+                String sCity = cursor.getString(7);
+
+                sp.edit().putString(ConstantSp.USERID,sUserId).commit();
+                sp.edit().putString(ConstantSp.USERNAME,sUserName).commit();
+                sp.edit().putString(ConstantSp.NAME,sName).commit();
+                sp.edit().putString(ConstantSp.EMAIL,sEmail).commit();
+                sp.edit().putString(ConstantSp.CONTACT,sContact).commit();
+                sp.edit().putString(ConstantSp.PASSWORD,sPassword).commit();
+                sp.edit().putString(ConstantSp.GENDER,sGender).commit();
+                sp.edit().putString(ConstantSp.CITY,sCity).commit();
+            }
+
+            System.out.println("Login Successfully");
+            Log.d("RESPONSE","Login Successfully");
+            //Toast.makeText(MainActivity.this, "Login Successfully", Toast.LENGTH_SHORT).show();
+            new CommonMethod(MainActivity.this, "Login Successfully");
+            //Snackbar.make(view,"Login Successfully",Snackbar.LENGTH_LONG).show();
+            new CommonMethod(view,"Login Successfully");
+                        /*Intent intent = new Intent(MainActivity.this,DashboardActivity.class);
+                        startActivity(intent);*/
+            new CommonMethod(MainActivity.this,DashboardActivity.class);
+        }
+        else{
+            new CommonMethod(MainActivity.this,"Invalid Credential");
+        }
+    }
+
+    private class doLogin extends AsyncTask<String,String,String> {
+
+        ProgressDialog pd;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pd = new ProgressDialog(MainActivity.this);
+            pd.setMessage("Please Wait...");
+            pd.setCancelable(false);
+            pd.show();
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            HashMap<String,String> hashMap = new HashMap<>();
+            hashMap.put("email",username.getText().toString());
+            hashMap.put("password",password.getText().toString());
+            return new MakeServiceCall().MakeServiceCall(ConstantSp.LOGIN_URL,MakeServiceCall.POST,hashMap);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            pd.dismiss();
+            try {
+                JSONObject object = new JSONObject(s);
+                if(object.getBoolean("Status")){
+                    JSONArray jsonArray = object.getJSONArray("UserData");
+                    for(int i=0;i<jsonArray.length();i++){
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        sp.edit().putString(ConstantSp.USERID,jsonObject.getString("userId")).commit();
+                        sp.edit().putString(ConstantSp.USERNAME,jsonObject.getString("userName")).commit();
+                        sp.edit().putString(ConstantSp.NAME,jsonObject.getString("name")).commit();
+                        sp.edit().putString(ConstantSp.EMAIL,jsonObject.getString("email")).commit();
+                        sp.edit().putString(ConstantSp.CONTACT,jsonObject.getString("contact")).commit();
+                        sp.edit().putString(ConstantSp.PASSWORD,"").commit();
+                        sp.edit().putString(ConstantSp.GENDER,jsonObject.getString("gender")).commit();
+                        sp.edit().putString(ConstantSp.CITY,jsonObject.getString("city")).commit();
+                    }
+                    new CommonMethod(MainActivity.this,object.getString("Message"));
+                    new CommonMethod(MainActivity.this,DashboardActivity.class);
+                }
+                else{
+                    new CommonMethod(MainActivity.this,object.getString("Message"));
+                }
+            } catch (JSONException e) {
+                //throw new RuntimeException(e);
+                Log.d("LOGIN_CATCH",e.getMessage().toString());
+            }
+        }
     }
 }

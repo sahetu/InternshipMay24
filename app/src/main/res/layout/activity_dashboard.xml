@@ -46,6 +46,12 @@
         android:text="Profile" />
 
     <Button
+        android:id="@+id/dashboard_delete_profile"
+        style="@style/button_20"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:text="Delete Profile" />
+
+    <Button
         android:id="@+id/dashboard_logout"
         style="@style/button_20"
         android:layout_marginTop="@dimen/_10sdp"
