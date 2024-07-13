@@ -31,6 +31,10 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class MainActivity extends AppCompatActivity {
 
     EditText username,password;
@@ -44,12 +48,16 @@ public class MainActivity extends AppCompatActivity {
 
     SharedPreferences sp;
 
+    ApiInterface apiInterface;
+    ProgressDialog pd;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         sp = getSharedPreferences(ConstantSp.PREF,MODE_PRIVATE);
+        apiInterface = ApiClient.getClient().create(ApiInterface.class);
 
         db = openOrCreateDatabase("InternshipMay24.db",MODE_PRIVATE,null);
         String tableQuery = "CREATE TABLE IF NOT EXISTS USERS(USERID INTEGER PRIMARY KEY,USERNAME VARCHAR(100),NAME VARCHAR(100),EMAIL VARCHAR(100),CONTACT BIGINT(10),PASSWORD VARCHAR(20),GENDER VARCHAR(6),CITY VARCHAR(20))";
@@ -111,7 +119,12 @@ public class MainActivity extends AppCompatActivity {
                 else{
                     //doSqliteLogin(view);
                     if(new ConnectionDetector(MainActivity.this).networkConnected()){
-                        new doLogin().execute();
+                        //new doLogin().execute();
+                        pd = new ProgressDialog(MainActivity.this);
+                        pd.setMessage("Please Wait...");
+                        pd.setCancelable(false);
+                        pd.show();
+                        doLoginRetrofit();
                     }
                     else{
                         new ConnectionDetector(MainActivity.this).networkDisconnected();
@@ -138,6 +151,44 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void doLoginRetrofit() {
+        Call<GetLoginData> call = apiInterface.getLoginData(username.getText().toString(),password.getText().toString());
+        call.enqueue(new Callback<GetLoginData>() {
+            @Override
+            public void onResponse(Call<GetLoginData> call, Response<GetLoginData> response) {
+                pd.dismiss();
+                if(response.code()==200){
+                    if(response.body().status){
+                        for(int i=0;i<response.body().userData.size();i++){
+                            sp.edit().putString(ConstantSp.USERID,response.body().userData.get(i).userId).commit();
+                            sp.edit().putString(ConstantSp.USERNAME,response.body().userData.get(i).userName).commit();
+                            sp.edit().putString(ConstantSp.NAME,response.body().userData.get(i).name).commit();
+                            sp.edit().putString(ConstantSp.EMAIL,response.body().userData.get(i).email).commit();
+                            sp.edit().putString(ConstantSp.CONTACT,response.body().userData.get(i).contact).commit();
+                            sp.edit().putString(ConstantSp.PASSWORD,"").commit();
+                            sp.edit().putString(ConstantSp.GENDER,response.body().userData.get(i).gender).commit();
+                            sp.edit().putString(ConstantSp.CITY,response.body().userData.get(i).city).commit();
+                        }
+                        new CommonMethod(MainActivity.this,response.body().message);
+                        new CommonMethod(MainActivity.this,DashboardActivity.class);
+                    }
+                    else{
+                        new CommonMethod(MainActivity.this,response.body().message);
+                    }
+                }
+                else{
+                    new CommonMethod(MainActivity.this,"Server Error Code : "+response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GetLoginData> call, Throwable t) {
+                pd.dismiss();
+                Log.d("RESPONSE_FAIL",t.getMessage());
+            }
+        });
     }
 
     private void doSqliteLogin(View view) {

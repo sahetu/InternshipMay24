@@ -2,7 +2,7 @@ package internship.may24;
 
 public class ConstantSp {
 
-    public static final String BASE_URL = "http://192.168.1.123/internship_may_api/";
+    public static final String BASE_URL = "https://kirtan-chauhan.000webhostapp.com/internship_api/";
     public static final String SIGNUP_URL = BASE_URL+"signup.php";
     public static final String LOGIN_URL = BASE_URL+"login.php";
     public static final String UPDATE_URL = BASE_URL+"updateProfile.php";

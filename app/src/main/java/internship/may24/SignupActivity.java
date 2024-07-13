@@ -29,6 +29,10 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class SignupActivity extends AppCompatActivity {
 
     EditText username,name,email,contact,password,confirmPassword;
@@ -48,10 +52,15 @@ public class SignupActivity extends AppCompatActivity {
 
     SQLiteDatabase db;
 
+    ApiInterface apiInterface;
+    ProgressDialog pd;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
+
+        apiInterface = ApiClient.getClient().create(ApiInterface.class);
 
         db = openOrCreateDatabase("InternshipMay24.db",MODE_PRIVATE,null);
         String tableQuery = "CREATE TABLE IF NOT EXISTS USERS(USERID INTEGER PRIMARY KEY,USERNAME VARCHAR(100),NAME VARCHAR(100),EMAIL VARCHAR(100),CONTACT BIGINT(10),PASSWORD VARCHAR(20),GENDER VARCHAR(6),CITY VARCHAR(20))";
@@ -204,7 +213,12 @@ public class SignupActivity extends AppCompatActivity {
                 else{
                     //doSqliteSignup(view);
                     if(new ConnectionDetector(SignupActivity.this).networkConnected()){
-                        new doSignup().execute();
+                        //new doSignup().execute();
+                        pd = new ProgressDialog(SignupActivity.this);
+                        pd.setMessage("Please Wait...");
+                        pd.setCancelable(false);
+                        pd.show();
+                        doSignupRetrofit();
                     }
                     else{
                         new ConnectionDetector(SignupActivity.this).networkDisconnected();
@@ -213,6 +227,34 @@ public class SignupActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void doSignupRetrofit() {
+        Call<GetSignupData> call = apiInterface.getSignupData(username.getText().toString(),name.getText().toString(),email.getText().toString(),contact.getText().toString(),password.getText().toString(),sGender,sCity);
+        call.enqueue(new Callback<GetSignupData>() {
+            @Override
+            public void onResponse(Call<GetSignupData> call, Response<GetSignupData> response) {
+                pd.dismiss();
+                if(response.code()==200){
+                    if(response.body().status){
+                        new CommonMethod(SignupActivity.this, response.body().message);
+                        onBackPressed();
+                    }
+                    else{
+                        new CommonMethod(SignupActivity.this, response.body().message);
+                    }
+                }
+                else{
+                    new CommonMethod(SignupActivity.this,"Server Error Code : "+response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GetSignupData> call, Throwable t) {
+                pd.dismiss();
+                Log.d("RESPONSE_FAIL",t.getMessage());
+            }
+        });
     }
 
     private void doSqliteSignup(View view) {

@@ -19,6 +19,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
+//Internship_may24
+
 public class CartActivity extends AppCompatActivity {
 
     public static TextView total;

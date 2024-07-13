@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -21,6 +22,10 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class DashboardActivity extends AppCompatActivity {
 
     TextView name;
@@ -28,10 +33,15 @@ public class DashboardActivity extends AppCompatActivity {
 
     Button profile,logout,category,wishlist,cart,myorders,deleteProfile;
 
+    ApiInterface apiInterface;
+    ProgressDialog pd;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
+
+        apiInterface = ApiClient.getClient().create(ApiInterface.class);
 
         sp = getSharedPreferences(ConstantSp.PREF,MODE_PRIVATE);
 
@@ -44,7 +54,12 @@ public class DashboardActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(new ConnectionDetector(DashboardActivity.this).networkConnected()){
-                    new deleteProfileData().execute();
+                    //new deleteProfileData().execute();
+                    pd = new ProgressDialog(DashboardActivity.this);
+                    pd.setMessage("Please Wait...");
+                    pd.setCancelable(false);
+                    pd.show();
+                    doDeleteRetrofit();
                 }
                 else{
                     new ConnectionDetector(DashboardActivity.this).networkDisconnected();
@@ -119,6 +134,36 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void doDeleteRetrofit() {
+        Call<GetSignupData> call = apiInterface.deleteProfileData(sp.getString(ConstantSp.USERID,""));
+        call.enqueue(new Callback<GetSignupData>() {
+            @Override
+            public void onResponse(Call<GetSignupData> call, Response<GetSignupData> response) {
+                pd.dismiss();
+                if(response.code()==200){
+                    if(response.body().status){
+                        new CommonMethod(DashboardActivity.this,response.body().message);
+                        sp.edit().clear().commit();
+                        new CommonMethod(DashboardActivity.this,MainActivity.class);
+                        finish();
+                    }
+                    else{
+                        new CommonMethod(DashboardActivity.this,response.body().message);
+                    }
+                }
+                else{
+                    new CommonMethod(DashboardActivity.this,"Server Error Code : "+response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GetSignupData> call, Throwable t) {
+                pd.dismiss();
+                Log.d("RESPONSE_FAIL",t.getMessage());
+            }
+        });
     }
 
     private class deleteProfileData extends AsyncTask<String,String,String> {

@@ -31,6 +31,10 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class ProfileActivity extends AppCompatActivity {
 
     EditText username,name,email,contact,password,confirmPassword;
@@ -51,6 +55,8 @@ public class ProfileActivity extends AppCompatActivity {
 
     SQLiteDatabase db;
     SharedPreferences sp;
+    ApiInterface apiInterface;
+    ProgressDialog pd;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +64,7 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile);
 
         sp = getSharedPreferences(ConstantSp.PREF,MODE_PRIVATE);
+        apiInterface = ApiClient.getClient().create(ApiInterface.class);
 
         db = openOrCreateDatabase("InternshipMay24.db",MODE_PRIVATE,null);
         String tableQuery = "CREATE TABLE IF NOT EXISTS USERS(USERID INTEGER PRIMARY KEY,USERNAME VARCHAR(100),NAME VARCHAR(100),EMAIL VARCHAR(100),CONTACT BIGINT(10),PASSWORD VARCHAR(20),GENDER VARCHAR(6),CITY VARCHAR(20))";
@@ -209,7 +216,12 @@ public class ProfileActivity extends AppCompatActivity {
                 else{
                     //doSqliteProfile(view);
                     if(new ConnectionDetector(ProfileActivity.this).networkConnected()){
-                        new doUpdate().execute();
+                        //new doUpdate().execute();
+                        pd = new ProgressDialog(ProfileActivity.this);
+                        pd.setMessage("Please Wait...");
+                        pd.setCancelable(false);
+                        pd.show();
+                        doUpdateRetrofit();
                     }
                     else{
                         new ConnectionDetector(ProfileActivity.this).networkDisconnected();
@@ -227,6 +239,42 @@ public class ProfileActivity extends AppCompatActivity {
 
         setData(false);
         
+    }
+
+    private void doUpdateRetrofit() {
+        Call<GetSignupData> call = apiInterface.updateProfileData(username.getText().toString(),name.getText().toString(),email.getText().toString(),contact.getText().toString(),sGender,sCity,sp.getString(ConstantSp.USERID,""));
+        call.enqueue(new Callback<GetSignupData>() {
+            @Override
+            public void onResponse(Call<GetSignupData> call, Response<GetSignupData> response) {
+                pd.dismiss();
+                if(response.code()==200){
+                    if(response.body().status){
+                        new CommonMethod(ProfileActivity.this,response.body().message);
+                        sp.edit().putString(ConstantSp.USERNAME,username.getText().toString()).commit();
+                        sp.edit().putString(ConstantSp.NAME,name.getText().toString()).commit();
+                        sp.edit().putString(ConstantSp.EMAIL,email.getText().toString()).commit();
+                        sp.edit().putString(ConstantSp.CONTACT,contact.getText().toString()).commit();
+                        sp.edit().putString(ConstantSp.PASSWORD,password.getText().toString()).commit();
+                        sp.edit().putString(ConstantSp.GENDER,sGender).commit();
+                        sp.edit().putString(ConstantSp.CITY,sCity).commit();
+
+                        setData(false);
+                    }
+                    else{
+                        new CommonMethod(ProfileActivity.this,response.body().message);
+                    }
+                }
+                else{
+                    new CommonMethod(ProfileActivity.this,"Server Error Code : "+response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GetSignupData> call, Throwable t) {
+                pd.dismiss();
+                Log.d("RESPONSE_FAIL",t.getMessage());
+            }
+        });
     }
 
     private void doSqliteProfile(View view) {
